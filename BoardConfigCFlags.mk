@@ -1,7 +1,5 @@
 #for Build Split
-ifeq ($(BOARD_USES_VENDORIMAGE), true)
 LOCAL_PROPRIETARY_MODULE := true
-endif
 
 ifeq ($(BOARD_USES_FIMGAPI_V5X), true)
     LOCAL_CFLAGS += -DFIMGAPI_V5X

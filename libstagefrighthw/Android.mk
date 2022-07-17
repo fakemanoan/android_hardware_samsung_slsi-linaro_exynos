@@ -35,9 +35,7 @@ LOCAL_SHARED_LIBRARIES :=    \
         liblog
 
 LOCAL_MODULE := libstagefrighthw
-ifeq ($(BOARD_USES_VENDORIMAGE), true)
 LOCAL_PROPRIETARY_MODULE := true
-endif
 
 LOCAL_MODULE_TAGS := optional
 include $(BUILD_SHARED_LIBRARY)

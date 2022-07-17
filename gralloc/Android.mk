@@ -50,9 +50,7 @@ LOCAL_SRC_FILES := 	\
 	mapper.cpp
 
 LOCAL_MODULE := gralloc.$(TARGET_SOC)
-ifeq ($(BOARD_USES_VENDORIMAGE), true)
 LOCAL_PROPRIETARY_MODULE := true
-endif
 
 LOCAL_CFLAGS += -DLOG_TAG=\"gralloc\" -Wno-missing-field-initializers -DMALI_AFBC_GRALLOC=$(MALI_AFBC_GRALLOC)
 
@@ -87,9 +85,7 @@ LOCAL_C_INCLUDES := \
 LOCAL_SRC_FILES := 	\
 	GrallocWrapper.cpp
 
-ifeq ($(BOARD_USES_VENDORIMAGE), true)
 LOCAL_PROPRIETARY_MODULE := true
-endif
 LOCAL_MODULE := libGrallocWrapper
 
 include $(BUILD_SHARED_LIBRARY)

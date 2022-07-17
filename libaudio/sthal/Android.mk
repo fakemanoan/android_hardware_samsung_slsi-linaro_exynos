@@ -41,9 +41,7 @@ endif
 
 LOCAL_MODULE := sound_trigger.primary.$(TARGET_SOC)
 
-ifeq ($(BOARD_USES_VENDORIMAGE), true)
 LOCAL_PROPRIETARY_MODULE := true
-endif
 LOCAL_MODULE_RELATIVE_PATH := hw
 LOCAL_MODULE_TAGS := optional
 
