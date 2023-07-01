@@ -255,7 +255,7 @@ int gralloc_lock(gralloc_module_t const* module,
         ALOGE("gralloc_lock can't be used with YCbCr_420_888 format");
         return -EINVAL;
     }
-
+/*
     switch(hnd->format)
     {
         case HAL_PIXEL_FORMAT_EXYNOS_ARGB_8888:
@@ -268,16 +268,24 @@ int gralloc_lock(gralloc_module_t const* module,
         case HAL_PIXEL_FORMAT_RAW_OPAQUE:
         case HAL_PIXEL_FORMAT_BLOB:
         case HAL_PIXEL_FORMAT_YCbCr_422_I:
+        #ifdef HAL_PIXEL_FORMAT_Y8
         case HAL_PIXEL_FORMAT_Y8:
+        #endif
+        #ifdef HAL_PIXEL_FORMAT_Y16
         case HAL_PIXEL_FORMAT_Y16:
+        #endif
         case HAL_PIXEL_FORMAT_YV12:
+        #ifdef HAL_PIXEL_FORMAT_RGBA_1010102
         case HAL_PIXEL_FORMAT_RGBA_1010102:
+        #ifdef HAL_PIXEL_FORMAT_RGBA_FP16
         case HAL_PIXEL_FORMAT_RGBA_FP16:
+        #endif   
             break;
         default:
             ALOGE("gralloc_lock doesn't support YUV formats. Please use gralloc_lock_ycbcr()");
             return -EINVAL;
     }
+    */
 
 #ifdef GRALLOC_RANGE_FLUSH
     if(usage & GRALLOC_USAGE_SW_WRITE_MASK)
@@ -481,6 +489,7 @@ int gralloc_lock_ycbcr(gralloc_module_t const* module,
         ycbcr->cb = (void *)(((unsigned long)hnd->base) + uOffset);
         ycbcr->cr = (void *)(((unsigned long)hnd->base) + vOffset);
         break;
+    #ifdef HAL_PIXEL_FORMAT_Y8
     case HAL_PIXEL_FORMAT_Y8:
     case HAL_PIXEL_FORMAT_Y16:
         yStride = cStride = hnd->stride;
@@ -491,6 +500,8 @@ int gralloc_lock_ycbcr(gralloc_module_t const* module,
         ycbcr->cb = 0;
         ycbcr->cr = 0;
         break;
+        #endif
+        #ifdef HAL_PIXEL_FORMAT_EXYNOS_YCbCr_P010_M
     case HAL_PIXEL_FORMAT_EXYNOS_YCbCr_P010_M:
         yStride = cStride = hnd->stride;
         vOffset = 2;
@@ -499,6 +510,7 @@ int gralloc_lock_ycbcr(gralloc_module_t const* module,
         ycbcr->cb = (void *)((unsigned long)hnd->base1);
         ycbcr->cr = (void *)((unsigned long)hnd->base2);
         break;
+        #endif
     default:
         ALOGE("gralloc_lock_ycbcr unexpected internal format %x",
                 hnd->format);
