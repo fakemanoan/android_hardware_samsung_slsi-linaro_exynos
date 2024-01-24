@@ -255,8 +255,6 @@ int gralloc_lock(gralloc_module_t const* module,
         ALOGE("gralloc_lock can't be used with YCbCr_420_888 format");
         return -EINVAL;
     }
-
-
 /*
     switch(hnd->format)
     {
@@ -279,6 +277,7 @@ int gralloc_lock(gralloc_module_t const* module,
         case HAL_PIXEL_FORMAT_YV12:
         #ifdef HAL_PIXEL_FORMAT_RGBA_1010102
         case HAL_PIXEL_FORMAT_RGBA_1010102:
+        #endif
         #ifdef HAL_PIXEL_FORMAT_RGBA_FP16
         case HAL_PIXEL_FORMAT_RGBA_FP16:
         #endif   
