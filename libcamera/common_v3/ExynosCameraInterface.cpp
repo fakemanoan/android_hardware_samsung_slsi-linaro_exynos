@@ -22,6 +22,10 @@
 #include "ExynosCameraInterface.h"
 #include "ExynosCameraAutoTimer.h"
 
+#ifdef SAMSUNG_TN_FEATURE
+#include "SecCameraVendorTags.h"
+#endif
+
 namespace android {
 
 static int HAL_camera_device_open(
