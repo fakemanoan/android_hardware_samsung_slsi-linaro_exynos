@@ -25,23 +25,26 @@
 #define FBT (GRALLOC_USAGE_HW_FB | GRALLOC_USAGE_HW_RENDER | GRALLOC_USAGE_HW_COMPOSER)
 #define GENERAL_UI (GRALLOC_USAGE_HW_TEXTURE | GRALLOC_USAGE_HW_COMPOSER)
 
-#ifdef USES_EXYNOS_AFBC_FEATURE
 /* It's for compression check format, width, usage*/
 int check_for_compression(int w, int h, int format, int usage)
 {
+	char value[256];
+	int afbc_prop;
+
+	property_get("ro.vendor.ddk.set.afbc", value, "0");
+	afbc_prop = atoi(value);
+
 	switch(format)
 	{
-		/* AFBC disabled for 2 and 3 byte formats because
-		 * 2,3 byte formats + AFBC + 64byte align not yet compatible with DPU.
-		 */
-		case HAL_PIXEL_FORMAT_RGB_565:
-		case HAL_PIXEL_FORMAT_RGB_888:
-			return 0;
 		case HAL_PIXEL_FORMAT_RGBA_8888:
 		case HAL_PIXEL_FORMAT_BGRA_8888:
+		case HAL_PIXEL_FORMAT_RGB_888:
 		case HAL_PIXEL_FORMAT_RGBX_8888:
+		case HAL_PIXEL_FORMAT_RGB_565:
 		case HAL_PIXEL_FORMAT_YV12:
 		{
+			if(afbc_prop == 0)
+				return 0;
 			if (usage & GRALLOC_USAGE_PROTECTED)
 				return 0;
 			if ((w <= 192) || (h <= 192)) /* min restriction for performance */
@@ -57,16 +60,11 @@ int check_for_compression(int w, int h, int format, int usage)
 
 			break;
 		}
+		default:
+			return 0;
 	}
 
-	return 0;
 }
-#else
-int check_for_compression(__unused int w, __unused int h, __unused int format, __unused int usage)
-{
-	return 0;
-}
-#endif
 
 uint64_t gralloc_select_format(int req_format, int usage, int is_compressible)
 {

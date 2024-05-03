@@ -255,6 +255,8 @@ int gralloc_lock(gralloc_module_t const* module,
         ALOGE("gralloc_lock can't be used with YCbCr_420_888 format");
         return -EINVAL;
     }
+
+
 /*
     switch(hnd->format)
     {
@@ -277,10 +279,6 @@ int gralloc_lock(gralloc_module_t const* module,
         case HAL_PIXEL_FORMAT_YV12:
         #ifdef HAL_PIXEL_FORMAT_RGBA_1010102
         case HAL_PIXEL_FORMAT_RGBA_1010102:
-        #endif
-        #ifdef HAL_PIXEL_FORMAT_RGBA_FP16
-        case HAL_PIXEL_FORMAT_RGBA_FP16:
-        #endif   
             break;
         default:
             ALOGE("gralloc_lock doesn't support YUV formats. Please use gralloc_lock_ycbcr()");
@@ -325,16 +323,21 @@ int gralloc_unlock(gralloc_module_t const* module,
         return 0;
 
 #ifdef GRALLOC_RANGE_FLUSH
-    if(((hnd->format == HAL_PIXEL_FORMAT_RGBA_8888)
-         || (hnd->format == HAL_PIXEL_FORMAT_RGBX_8888)) && (hnd->lock_offset != 0))
-         exynos_ion_sync_fd_partial(getIonFd(module), hnd->fd, hnd->lock_offset * 4, hnd->lock_len * 4);
-    else
-        exynos_ion_sync_fd(getIonFd(module), hnd->fd);
+    if(hnd->lock_usage & GRALLOC_USAGE_SW_WRITE_MASK)
+    {
+        if(((hnd->format == HAL_PIXEL_FORMAT_RGBA_8888)
+            || (hnd->format == HAL_PIXEL_FORMAT_RGBX_8888)) && (hnd->lock_offset != 0))
+            exynos_ion_sync_fd_partial(getIonFd(module), hnd->fd, hnd->lock_offset * 4, hnd->lock_len * 4);
+        else
+            exynos_ion_sync_fd(getIonFd(module), hnd->fd);
 
-    if (hnd->fd1 >= 0)
-        exynos_ion_sync_fd(getIonFd(module), hnd->fd1);
-    if (hnd->fd2 >= 0)
-        exynos_ion_sync_fd(getIonFd(module), hnd->fd2);
+        if (hnd->fd1 >= 0)
+            exynos_ion_sync_fd(getIonFd(module), hnd->fd1);
+        if (hnd->fd2 >= 0)
+            exynos_ion_sync_fd(getIonFd(module), hnd->fd2);
+
+        hnd->lock_usage = 0;
+    }
 #else
     exynos_ion_sync_fd(getIonFd(module), hnd->fd);
 
